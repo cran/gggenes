@@ -1,6 +1,6 @@
 Package: gggenes
 Title: Draw Gene Arrow Maps in 'ggplot2'
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: person("David", "Wilkins", email = "david@wilkox.org",
                   role = c("aut", "cre"))
 Description: Provides a 'ggplot2' geom and helper functions for drawing gene
@@ -16,8 +16,8 @@ BugReports: https://github.com/wilkox/gggenes/issues
 Suggests: testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-05-26 07:13:52 UTC; wilkox
+Packaged: 2018-06-16 04:59:17 UTC; wilkox
 Author: David Wilkins [aut, cre]
 Maintainer: David Wilkins <david@wilkox.org>
 Repository: CRAN
-Date/Publication: 2018-05-26 07:25:34 UTC
+Date/Publication: 2018-06-16 05:15:27 UTC

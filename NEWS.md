@@ -1,22 +1,34 @@
-# v0.3.2
+# ggfittext 0.4.0
 
-# Bug fixes
+## Major changes
 
-- Hopefully, finally fix compatibility with tidyeval changes in ggplot2 v2.3.0
+- Add new `geom_subgene_arrow()` (contributed by @zdk123)
+- Add new `geom_subgene_label()`
+- Support new version of ggfittext (0.8.0)
 
-# v0.3.1
+## Bug fixes
+
+- Fix failing visual tests
+- Fix space in figure file name
+- Replace `expect_error` with the more reliable `expect_silent` in tests
+- Fix bugs in several tests
+- Add visual testing with vdiffr
+- Misc. small bug fixes and typo corrections
+- Fix compatibility with tidyeval changes in ggplot2 v2.3.0
+
+# ggfittext 0.3.1
 
 ## Bug fixes
 
 - Now *actually* compatible with ggplot2 v2.3.0
 
-# v0.3.0
+# ggfittext 0.3.0
 
 ## Major changes
 
 - `geom_gene_arrow()` now supports `forward` aesthetic (#3 and #5, thanks
-- `geom_gene_label` added (#3, thanks @adomingues)
   @adomingues and @jasonserviss)
+- `geom_gene_label()` added (#3, thanks @adomingues)
 - Compatible with ggplot2 v2.3.0
 
 ## Minor changes
@@ -29,7 +41,7 @@
 
 - Remove README.html so GitHub renders README correctly
 
-# v0.2.0
+# ggfittext 0.2.0
 
 ## Major changes
 
@@ -39,4 +51,4 @@
 
 ## Bug fixes
 
-- Fix drawing of `geom_gene_arrow` key
+- Fix drawing of `geom_gene_arrow()`

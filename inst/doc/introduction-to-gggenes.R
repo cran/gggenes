@@ -54,3 +54,28 @@ ggplot(
   geom_gene_arrow() +
   theme_genes()
 
+## ----subgenes------------------------------------------------------------
+ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule)) +
+  facet_wrap(~ molecule, scales = "free", ncol = 1) +
+  geom_gene_arrow(fill = "white") +
+  geom_subgene_arrow(data = example_subgenes,
+    aes(xmin = start, xmax = end, y = molecule, fill = gene,
+        xsubmin = from, xsubmax = to), color="black", alpha=.7) +
+  theme_genes()
+
+## ----subgene labels, fig.height = 2--------------------------------------
+ggplot(subset(example_genes, molecule == "Genome4" & gene == "genA"),
+       aes(xmin = start, xmax = end, y = strand)
+  ) +
+  geom_gene_arrow() +
+  geom_gene_label(aes(label = gene)) +
+  geom_subgene_arrow(
+    data = subset(example_subgenes, molecule == "Genome4" & gene == "genA"),
+    aes(xsubmin = from, xsubmax = to, fill = subgene)
+  ) +
+  geom_subgene_label(
+    data = subset(example_subgenes, molecule == "Genome4" & gene == "genA"),
+    aes(xsubmin = from, xsubmax = to, label = subgene),
+    min.size = 0
+  )
+

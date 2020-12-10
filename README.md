@@ -105,28 +105,25 @@ ggplot(
 
 ![](man/figures/README-labelled_genes-1.png)<!-- -->
 
-## Reversing some genes with the optional `forward` aesthetic
+## Reversing gene direction with the optional `forward` aesthetic
 
-Sometimes you might want to reverse the direction of some genes from
-that implied by `xmin` and `xmax`. For example, you might want to draw
-both a forward and reverse strand within each facet, and reverse the
-direction of all the genes on the reverse strand. The optional `forward`
-aesthetic is intended for this sort of situation.
+By default, genes arrows are drawn pointing in the direction implied by
+`xmin` and `xmax`. You can override this with the optional `forward`
+aesthetic, which can be useful when the gene coordinates and orientation
+are encoded as separate variables.
 
 If `forward` is TRUE (the default), or any value that coerces to TRUE
-such as 1, the gene will be drawn pointing in the normal direction,
-i.e. that implied by `xmin` and `xmax`. If `forward` is FALSE, or any
-value that coerces to FALSE such as -1, the gene will be drawn in the
-reverse of this implied direction. In the following example, the
-`forward` aesthetic has been used to reverse the direction of all genes
-on the reverse strand from that implied by `xmin` and `xmax`.
+such as 1, the gene will be drawn pointing in the implied direction,
+i.e. from `xmin` to `xmax`. If `forward` is FALSE, or any value that
+coerces to FALSE such as -1, the gene will be drawn in the reverse of
+this implied direction:
 
 ``` r
-example_genes$direction <- ifelse(example_genes$strand == "forward", 1, -1)
-ggplot(subset(example_genes, molecule == "Genome1"),
-                aes(xmin = start, xmax = end, y = strand, fill = gene,
-                    forward = direction)) +
+ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene, 
+                          forward = orientation)) +
   geom_gene_arrow() +
+  facet_wrap(~ molecule, scales = "free", ncol = 1) +
+  scale_fill_brewer(palette = "Set3") +
   theme_genes()
 ```
 
@@ -140,9 +137,9 @@ alignments, using `geom_subgene_arrow()`.
 This works similarly to `geom_gene_arrow()`, but in addition to `xmin`
 and `xmax` (which determine the gene boundaries), we need the aesthetics
 `xsubmin` and `xsubmax` to determine the subgene boundaries.
-`geom_gene_arrow()` will produce pretty arrowheads, as long as `xmin >=
-xsubmin` and `xmax >= xsubmax` for all subgenes (subgenes that break
-gene boundaries will be skipped with a warning).
+`geom_gene_arrow()` will produce pretty arrowheads, as long as
+`xmin >= xsubmin` and `xmax >= xsubmax` for all subgenes (subgenes that
+break gene boundaries will be skipped with a warning).
 
 The suggested usage is to use `geom_gene_arrow()` with no fill, and then
 add a subgene layer over this:

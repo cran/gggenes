@@ -1,4 +1,19 @@
-# ggfittext 0.4.0
+# gggenes 0.4.1
+
+## Minor changes
+
+- More useful example for the `forward` aesthetic in the README and
+  `example_genes` (thanks @rickbeeloo)
+
+## Bug fixes
+
+- Fix bug in checking position of subgenes relative to the parent gene (#21,
+  thanks @mchiapello)
+- Add 'orientation' column to `example_subgenes` and correct some errors in the
+  documentation for both example data frames
+- Make vdiffr tests conditional
+
+# gggenes 0.4.0
 
 ## Major changes
 
@@ -16,13 +31,13 @@
 - Misc. small bug fixes and typo corrections
 - Fix compatibility with tidyeval changes in ggplot2 v2.3.0
 
-# ggfittext 0.3.1
+# gggenes 0.3.1
 
 ## Bug fixes
 
 - Now *actually* compatible with ggplot2 v2.3.0
 
-# ggfittext 0.3.0
+# gggenes 0.3.0
 
 ## Major changes
 
@@ -41,7 +56,7 @@
 
 - Remove README.html so GitHub renders README correctly
 
-# ggfittext 0.2.0
+# gggenes 0.2.0
 
 ## Major changes
 

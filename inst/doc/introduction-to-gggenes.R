@@ -1,4 +1,4 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -6,7 +6,7 @@ knitr::opts_chunk$set(
   fig.height = 10
 )
 
-## ----geom_gene_arrow, message = FALSE------------------------------------
+## ----geom_gene_arrow, message = FALSE-----------------------------------------
 library(ggplot2)
 library(gggenes)
 ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene)) +
@@ -14,14 +14,14 @@ ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene)) 
   facet_wrap(~ molecule, scales = "free", ncol = 1) +
   scale_fill_brewer(palette = "Set3")
 
-## ----theme_genes---------------------------------------------------------
+## ----theme_genes--------------------------------------------------------------
 ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene)) +
   geom_gene_arrow() +
   facet_wrap(~ molecule, scales = "free", ncol = 1) +
   scale_fill_brewer(palette = "Set3") +
   theme_genes()
 
-## ----make_alignment_dummies----------------------------------------------
+## ----make_alignment_dummies---------------------------------------------------
 dummies <- make_alignment_dummies(
   example_genes,
   aes(xmin = start, xmax = end, y = molecule, id = gene),
@@ -35,7 +35,7 @@ ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene)) 
   scale_fill_brewer(palette = "Set3") +
   theme_genes()
 
-## ----labelled_genes------------------------------------------------------
+## ----labelled_genes-----------------------------------------------------------
 ggplot(example_genes, aes(xmin = start, xmax = end, y =
                                             molecule, fill = gene, label = gene)) +
   geom_gene_arrow(arrowhead_height = unit(3, "mm"), arrowhead_width = unit(1, "mm")) +
@@ -45,16 +45,15 @@ ggplot(example_genes, aes(xmin = start, xmax = end, y =
   scale_fill_brewer(palette = "Set3") +
   theme_genes()
 
-## ----reversing_direction, fig.height = 3---------------------------------
-example_genes$direction <- ifelse(example_genes$strand == "forward", 1, -1)
-ggplot(
-  subset(example_genes, molecule == "Genome1"),
-  aes(xmin = start, xmax = end, y = strand, fill = gene, forward = direction)
-  ) +
+## ----reversing_direction------------------------------------------------------
+ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene, 
+                          forward = orientation)) +
   geom_gene_arrow() +
+  facet_wrap(~ molecule, scales = "free", ncol = 1) +
+  scale_fill_brewer(palette = "Set3") +
   theme_genes()
 
-## ----subgenes------------------------------------------------------------
+## ----subgenes-----------------------------------------------------------------
 ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule)) +
   facet_wrap(~ molecule, scales = "free", ncol = 1) +
   geom_gene_arrow(fill = "white") +
@@ -63,7 +62,7 @@ ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule)) +
         xsubmin = from, xsubmax = to), color="black", alpha=.7) +
   theme_genes()
 
-## ----subgene labels, fig.height = 2--------------------------------------
+## ----subgene labels, fig.height = 2-------------------------------------------
 ggplot(subset(example_genes, molecule == "Genome4" & gene == "genA"),
        aes(xmin = start, xmax = end, y = strand)
   ) +

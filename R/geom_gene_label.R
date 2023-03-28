@@ -33,6 +33,7 @@
 #'
 #' - xmin,xmax (start and end of the gene; required)
 #' - y (molecule; required)
+#' - label (the label text; required)
 #' - colour
 #' - size
 #' - alpha
@@ -82,6 +83,7 @@ geom_gene_label <- function(
       min.size = min.size,
       grow = grow,
       reflow = reflow,
+      height = height,
       ...
     )
   )
@@ -121,6 +123,12 @@ GeomGeneLabel <- ggplot2::ggproto(
     subgroup = NA
   ) {
 
+    # Detect flipped coordinates
+    coord_flip <- inherits(coord, "CoordFlip")
+    if (coord_flip) {
+      data$angle <- data$angle + 90
+    }
+
     # Transform data to panel scales
     data <- coord$transform(data, panel_scales)
 
@@ -130,18 +138,33 @@ GeomGeneLabel <- ggplot2::ggproto(
     }
 
     # Use ggfittext's fittexttree to draw text
-    gt <- grid::gTree(
-      data = data,
-      padding.x = padding.x,
-      padding.y = padding.y,
-      place = align,
-      min.size = min.size,
-      grow = grow,
-      reflow = reflow,
-      cl = "fittexttree",
-      height = height,
-      fullheight = TRUE
-    )
+    if (coord_flip) {
+      gt <- grid::gTree(
+        data = data,
+        padding.x = padding.x,
+        padding.y = padding.y,
+        place = align,
+        min.size = min.size,
+        grow = grow,
+        reflow = reflow,
+        cl = "fittexttree",
+        width = height,
+        fullheight = TRUE
+      )
+    } else {
+      gt <- grid::gTree(
+        data = data,
+        padding.x = padding.x,
+        padding.y = padding.y,
+        place = align,
+        min.size = min.size,
+        grow = grow,
+        reflow = reflow,
+        cl = "fittexttree",
+        height = height,
+        fullheight = TRUE
+      )
+    }
     gt$name <- grid::grobName(gt, "geom_gene_label")
     gt
   }

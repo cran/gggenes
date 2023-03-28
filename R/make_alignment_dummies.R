@@ -43,7 +43,7 @@ make_alignment_dummies <- function(data, mapping, on, side = "left") {
   # NOTE - version testing is for the ggplot2 2.3.0 transition. Once >2.3.0 is
   # required, this can be removed
   if (utils::packageVersion("ggplot2") >= "2.2.1.9000") {
-    data <- data[sapply(mapping, rlang::quo_name)]
+    data <- data[vapply(mapping, rlang::quo_name, character(1))]
   } else {
     data <- data[as.character(unlist(mapping))]
   }
@@ -56,7 +56,7 @@ make_alignment_dummies <- function(data, mapping, on, side = "left") {
   dummies <- do.call("rbind", dummies)
 
   # Get alignment edge of target gene (start if side is left, end if right)
-  dummies <- dummies[dummies$id == on, ]
+  dummies <- dummies[which(dummies$id == on), ]
   dummies$true_min <- ifelse(dummies$xmin < dummies$xmax, dummies$xmin, dummies$xmax)
   dummies$true_max <- ifelse(dummies$xmin > dummies$xmax, dummies$xmin, dummies$xmax)
   dummies <- dummies[, c("id", "y", "range_min", "range_max",
@@ -67,12 +67,11 @@ make_alignment_dummies <- function(data, mapping, on, side = "left") {
   dummies$target_offset <- dummies$target_edge - dummies$range_min
 
   # Position start dummy
-  dummies$start_dummy <- dummies$range_min - (max(dummies$target_offset) -
-                                              dummies$target_offset)
+  dummies$start_dummy <- dummies$range_min - (max(dummies$target_offset, na.rm = TRUE) - dummies$target_offset)
 
   # Position end dummy
   dummies$range <- dummies$range_max - dummies$start_dummy
-  dummies$end_dummy <- dummies$range_max + (max(dummies$range) - dummies$range)
+  dummies$end_dummy <- dummies$range_max + (max(dummies$range, na.rm = TRUE) - dummies$range)
 
   # Clean up
   dummies <- dummies[, c("y", "start_dummy", "end_dummy", "id")]

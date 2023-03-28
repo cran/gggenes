@@ -1,3 +1,24 @@
+# gggenes 0.5.0
+
+## Major changes
+
+- Add new `geom_feature()` and `geom_feature_label()`
+- Add support for flipped coordinates with `coord_flip()` (#38)
+
+## Minor changes
+
+- Explicit coercion of the `forward` value to logical, more useful values for
+  the forward aesthetic in example data, and fix an error in README and
+  introductory vignette (-1 does not coerce to FALSE...)
+- Improve handling of NA `id` values in `make_alignment_dummies()` (#51, thanks
+  @NanamiKubota)
+- Update `element_line` to use `linewidth` rather than `size` (`size`
+  deprecated as of ggplot2 3.4.0)
+
+## Bug fixes
+
+- Fix bug where `height` argument to `geom_gene_label()` and `geom_subgene_label()` were being ignored (#40, thanks @jvanbelzen)
+
 # gggenes 0.4.1
 
 ## Minor changes

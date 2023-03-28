@@ -1,8 +1,11 @@
 
-[![Travis-CI Build
-Status](https://travis-ci.org/wilkox/gggenes.svg?branch=master)](https://travis-ci.org/wilkox/gggenes)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/gggenes)](https://cran.r-project.org/package=gggenes)
-[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/wilkox/gggenes/workflows/R-CMD-check/badge.svg)](https://github.com/wilkox/gggenes/actions)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/gggenes)](https://cran.r-project.org/package=gggenes)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+<!-- badges: end -->
 
 # gggenes
 
@@ -115,7 +118,7 @@ are encoded as separate variables.
 If `forward` is TRUE (the default), or any value that coerces to TRUE
 such as 1, the gene will be drawn pointing in the implied direction,
 i.e. from `xmin` to `xmax`. If `forward` is FALSE, or any value that
-coerces to FALSE such as -1, the gene will be drawn in the reverse of
+coerces to FALSE such as 0, the gene will be drawn in the reverse of
 this implied direction:
 
 ``` r
@@ -178,3 +181,46 @@ ggplot(subset(example_genes, molecule == "Genome4" & gene == "genA"),
 ```
 
 ![](man/figures/README-subgene_labels-1.png)<!-- -->
+
+## Drawing point genetic features
+
+We can draw point genetic features, such as restriction sites or
+transcription start sites, with `geom_feature()`, and label them with
+`geom_feature_label()`. Both of these geoms take an optional `forward`
+aesthetic to indicate whether a feature is oriented and, if so, in what
+direction (`TRUE` meaning oriented towards the right and `FALSE` meaning
+towards the left).
+
+``` r
+ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene, label = gene)) +
+  geom_feature(
+    data = example_features,
+    aes(x = position, y = molecule, forward = forward)
+  ) +
+  geom_feature_label(
+    data = example_features,
+    aes(x = position, y = molecule, label = name, forward = forward)
+  ) +
+  geom_gene_arrow() +
+  geom_gene_label() +
+  geom_blank(data = example_dummies) +
+  facet_wrap(~ molecule, scales = "free", ncol = 1) +
+  scale_fill_brewer(palette = "Set3") +
+  theme_genes()
+```
+
+![](man/figures/README-unnamed-chunk-2-1.png)<!-- -->
+
+## Other genetic features
+
+Do you have an idea, suggestion or request for another type of feature
+for gggenes to draw? [Open a new
+issue](https://github.com/wilkox/gggenes/issues/new) and it will be
+considered.
+
+## Related packages
+
+- [gggenomes](https://thackl.github.io/gggenomes/) for visualising
+  comparative genomics
+- [plasmapR](https://github.com/BradyAJohnston/plasmapR) for quickly
+  drawing plasmid maps from GenBank files

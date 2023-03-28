@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-'gggenes' is a (quite small) set of tools for drawing gene arrow maps with
-'ggplot2.'
+'gggenes' is ggplot2 extension for drawing gene arrow maps.
 
 ## Drawing gene arrows with `geom_gene_arrow()`
 
@@ -106,7 +105,7 @@ variables.
 If `forward` is TRUE (the default), or any value that coerces to TRUE such as
 1, the gene will be drawn pointing in the implied direction, i.e. from `xmin`
 to `xmax`. If `forward` is FALSE, or any value that coerces to FALSE such as
--1, the gene will be drawn in the reverse of this implied direction:
+0, the gene will be drawn in the reverse of this implied direction:
 
 ```{r reversing_direction}
 ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene, 
@@ -160,4 +159,29 @@ ggplot(subset(example_genes, molecule == "Genome4" & gene == "genA"),
     aes(xsubmin = from, xsubmax = to, label = subgene),
     min.size = 0
   )
+```
+
+## Drawing point genetic features
+
+We can draw point genetic features, such as restriction sites or transcription
+start sites, with `geom_feature()`, and label them with `geom_feature_label()`.
+Both of these geoms take an optional `forward` aesthetic to indicate whether a
+feature is oriented and, if so, in what direction (`TRUE` meaning oriented
+towards the right and `FALSE` meaning towards the left).
+
+```{r}
+ggplot(example_genes, aes(xmin = start, xmax = end, y = molecule, fill = gene)) +
+  geom_feature(
+    data = example_features,
+    aes(x = position, y = molecule, forward = forward)
+  ) +
+  geom_feature_label(
+    data = example_features,
+    aes(x = position, y = molecule, label = name, forward = forward)
+  ) +
+  geom_gene_arrow() +
+  geom_blank(data = example_dummies) +
+  facet_wrap(~ molecule, scales = "free", ncol = 1) +
+  scale_fill_brewer(palette = "Set3") +
+  theme_genes()
 ```

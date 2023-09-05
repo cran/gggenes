@@ -1,6 +1,6 @@
 Package: gggenes
 Title: Draw Gene Arrow Maps in 'ggplot2'
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: c(person("David", "Wilkins", email = "david@wilkox.org",
                   role = c("aut", "cre")),
              person("Zachary", "Kurtz", email = "zdkurtz@gmail.com",
@@ -19,9 +19,9 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en-US
 NeedsCompilation: no
-Packaged: 2023-03-28 04:49:23 UTC; wilkox
+Packaged: 2023-09-05 05:34:29 UTC; wilkox
 Author: David Wilkins [aut, cre],
   Zachary Kurtz [ctb]
 Maintainer: David Wilkins <david@wilkox.org>
 Repository: CRAN
-Date/Publication: 2023-03-28 05:10:02 UTC
+Date/Publication: 2023-09-05 11:50:10 UTC

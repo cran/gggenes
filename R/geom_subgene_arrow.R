@@ -15,18 +15,19 @@
 #'
 #' @section Aesthetics:
 #'
-#' -  xmin,xmax (start and end of the gene; will be used to determine gene
+#' - xmin,xmax (start and end of the gene; will be used to determine gene
 #' orientation)
-#' -  xsubmin,xsubmax (start and end of subgene segment). Should be consistent
+#' - xsubmin,xsubmax (start and end of subgene segment). Should be consistent
 #' with `xmin`/`xmax`
-#' -  y (molecule)
-#' -  forward (if FALSE, or coercible to FALSE, the gene arrow will be drawn in
+#' - y (molecule)
+#' - forward (if FALSE, or coercible to FALSE, the gene arrow will be drawn in
 #' the opposite direction to that determined by `xmin` and `xmax`)
-#' -  alpha
-#' -  colour
-#' -  fill
-#' -  linetype
-#' -  size
+#' - alpha
+#' - colour
+#' - fill
+#' - linetype
+#' - linewidth (the former size aesthetic has been deprecated and will be
+#' removed in future versions)
 #'
 #' @param mapping,data,stat,position,na.rm,show.legend,inherit.aes,... As
 #' standard for 'ggplot2'.
@@ -87,7 +88,7 @@ GeomSubgeneArrow <- ggplot2::ggproto("GeomSubgeneArrow", ggplot2::Geom,
     colour = "black",
     fill = "white",
     linetype = 1,
-    size = 0.3
+    linewidth = 0.3
   ),
   draw_key = function(data, params, size) {
     grid::rectGrob(
@@ -97,7 +98,7 @@ GeomSubgeneArrow <- ggplot2::ggproto("GeomSubgeneArrow", ggplot2::Geom,
         col = data$colour,
         fill = ggplot2::alpha(data$fill, data$alpha),
         lty = data$linetype,
-        lwd = data$size * ggplot2::.pt
+        lwd = (data$linewidth %||% data$size) * ggplot2::.pt
       )
     )
   },
@@ -110,37 +111,41 @@ GeomSubgeneArrow <- ggplot2::ggproto("GeomSubgeneArrow", ggplot2::Geom,
     arrow_body_height
   ) {
 
-    # Detect flipped coordinates
-    coord_flip <- inherits(coord, "CoordFlip")
+    # Detect coordinate system
+    coord_system <- get_coord_system(coord)
 
     orig_data <- data
     ## save original data
     data <- coord$transform(data, panel_scales)
     ## force rescale of sub characteristics
-    if (coord_flip) {
+    if (coord_system == "flip") {
       tmp <- setNames(data[,c("ysubmin", "ysubmax")], c("xmin", "xmax"))
       data[,c("ysubmin", "ysubmax")] <- coord$transform(tmp, panel_scales)
-    } else {
+    } else if (coord_system == "cartesian") {
       tmp <- setNames(data[,c("xsubmin", "xsubmax")], c("xmin", "xmax"))
       data[,c("xsubmin", "xsubmax")] <- coord$transform(tmp, panel_scales)
+    } else {
+      cli::cli_abort("Don't know how to draw in this coordinate system")
     }
 
     gt <- grid::gTree(
       data = data,
       orig_data = orig_data,
-      cl = ifelse(coord_flip, "flipsubgenearrowtree", "subgenearrowtree"),
+      cl = paste0(coord_system, "subgenearrowtree"),
       arrowhead_width = arrowhead_width,
       arrowhead_height = arrowhead_height,
       arrow_body_height = arrow_body_height
     )
     gt$name <- grid::grobName(gt, "geom_subgene_arrow")
     gt
-  }
+  },
+  non_missing_aes = "size",
+  rename_size = TRUE
 )
 
 #' @importFrom grid makeContent
 #' @export
-makeContent.subgenearrowtree <- function(x) {
+makeContent.cartesiansubgenearrowtree <- function(x) {
 
   data <- x$data
 
@@ -250,7 +255,7 @@ makeContent.subgenearrowtree <- function(x) {
     }
     else {
       ## will we ever get here?
-      stop("Condition not met")
+      cli::cli_abort("Condition not met")
     }
     # Create polygon grob
     pg <- grid::polygonGrob(
@@ -260,7 +265,7 @@ makeContent.subgenearrowtree <- function(x) {
         fill = ggplot2::alpha(subgene$fill, subgene$alpha),
         col = ggplot2::alpha(subgene$colour, subgene$alpha),
         lty = subgene$linetype,
-        lwd = subgene$size * ggplot2::.pt
+        lwd = (subgene$linewidth %||% subgene$size) * ggplot2::.pt
       )
     )
 
@@ -270,11 +275,9 @@ makeContent.subgenearrowtree <- function(x) {
   skip <- vapply(grobs, is.null, logical(1))
   if (any(skip)) {
     subgenes <- x$orig_data[skip,, drop = FALSE]
-    message <- "Subgene %d (%d..%d) breaks boundaries of gene (%d..%d), skipping"
-    message <- sprintf(message, which(skip),
-                                subgenes$xsubmin, subgenes$xsubmax,
-                                subgenes$xmin,    subgenes$xmax)
-    warning(paste(message, collaspe = "\n"), call. = FALSE)
+    for (i in seq_len(nrow(subgenes))) {
+      cli::cli_warn("Subgene ({subgenes$xsubmin[i]}..{subgenes$xsubmax[i]}) breaks boundaries of gene ({subgenes$xmin[i]}..{subgenes$xmax[i]}), skipping")
+    }
   }
 
   class(grobs) <- "gList"
@@ -392,7 +395,7 @@ makeContent.flipsubgenearrowtree <- function(x) {
       )
     } else {
       ## will we ever get here?
-      stop("Condition not met")
+      cli::cli_abort("Condition not met")
     }
     # Create polygon grob
     pg <- grid::polygonGrob(
@@ -402,7 +405,7 @@ makeContent.flipsubgenearrowtree <- function(x) {
         fill = ggplot2::alpha(subgene$fill, subgene$alpha),
         col = ggplot2::alpha(subgene$colour, subgene$alpha),
         lty = subgene$linetype,
-        lwd = subgene$size * ggplot2::.pt
+        lwd = (subgene$linewidth %||% subgene$size) * ggplot2::.pt
       )
     )
 
@@ -412,11 +415,9 @@ makeContent.flipsubgenearrowtree <- function(x) {
   skip <- vapply(grobs, is.null, logical(1))
   if (any(skip)) {
     subgenes <- x$orig_data[skip,, drop = FALSE]
-    message <- "Subgene %d (%d..%d) breaks boundaries of gene (%d..%d), skipping"
-    message <- sprintf(message, which(skip),
-                                subgenes$xsubmin, subgenes$xsubmax,
-                                subgenes$xmin,    subgenes$xmax)
-    warning(paste(message, collaspe = "\n"), call. = FALSE)
+    for (i in seq_len(nrow(subgenes))) {
+      cli::cli_warn("Subgene ({subgenes$xsubmin[i]}..{subgenes$xsubmax[i]}) breaks boundaries of gene ({subgenes$xmin[i]}..{subgenes$xmax[i]}), skipping")
+    }
   }
 
   class(grobs) <- "gList"

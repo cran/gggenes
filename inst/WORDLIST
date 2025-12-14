@@ -5,9 +5,11 @@ Lifecycle
 README
 aes
 centre
+cli
 coercible
 colour
 dplyr
+favour
 fontface
 geoms
 ggfittext
@@ -15,6 +17,7 @@ gggenomes
 ggplot
 labelled
 linetype
+linewidth
 normalise
 patchlevel
 plasmapR

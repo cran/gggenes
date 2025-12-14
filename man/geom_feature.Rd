@@ -61,7 +61,8 @@ the feature will be drawn as a vertical line)
 \item alpha
 \item colour
 \item linetype
-\item size
+\item linewidth (the former size aesthetic has been deprecated and will be
+removed in future versions)
 }
 }
 
@@ -76,5 +77,5 @@ ggplot2::ggplot(example_genes, ggplot2::aes(xmin = start, xmax = end,
 
 }
 \seealso{
-\code{\link[=geom_feature_label]{geom_feature_label()}}
+\code{\link[=geom_feature_label]{geom_feature_label()}}, \code{\link[=geom_terminator]{geom_terminator()}}
 }

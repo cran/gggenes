@@ -114,9 +114,9 @@ GeomSubgeneLabel <- ggplot2::ggproto(
     subgroup = NA
   ) {
 
-    # Detect flipped coordinates
-    coord_flip <- inherits(coord, "CoordFlip")
-    if (coord_flip) {
+    # Detect coordinate system
+    coord_system <- get_coord_system(coord)
+    if (coord_system == "flip") {
       data$angle <- data$angle + 90
     }
 
@@ -131,11 +131,11 @@ GeomSubgeneLabel <- ggplot2::ggproto(
 
     # Check the value of 'align'
     if (! align %in% c("left", "centre", "center", "middle", "right")) {
-      stop("`align` must be one of `left`, `centre`, `center`, `middle` or `right`")
+      cli::cli_abort("`align` must be one of `left`, `centre`, `center`, `middle` or `right`")
     }
 
     # Use ggfittext's fittexttree to draw the text
-    if (coord_flip) {
+    if (coord_system == "flip") {
       gt <- grid::gTree(
         data = data,
         padding.x = padding.x,
@@ -148,7 +148,7 @@ GeomSubgeneLabel <- ggplot2::ggproto(
         width = height,
         fullheight = TRUE
       )
-    } else {
+    } else if (coord_system == "cartesian") {
       gt <- grid::gTree(
         data = data,
         padding.x = padding.x,
@@ -161,6 +161,8 @@ GeomSubgeneLabel <- ggplot2::ggproto(
         height = height,
         fullheight = TRUE
       )
+    } else {
+      cli::cli_abort("Don't know how to draw in this coordinate system")
     }
     gt$name <- grid::grobName(gt, "geom_subgene_label")
     gt

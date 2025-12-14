@@ -1,3 +1,16 @@
+# gggenes 0.6.0
+
+## Major changes
+
+- Add new `geom_terminator()` and `geom_terminator_label()`
+- Add support for polar coordinates
+
+## Minor changes
+
+- Deprecate the `size` aesthetic in favour of `linewidth` (`size` deprecated as
+  of ggplot2 3.4.0)
+- Use the cli package for messages, warnings etc.
+
 # gggenes 0.5.1
 
 ## Minor changes
@@ -63,7 +76,7 @@
 
 ## Bug fixes
 
-- Now *actually* compatible with ggplot2 v2.3.0
+- Now _actually_ compatible with ggplot2 v2.3.0
 
 # gggenes 0.3.0
 

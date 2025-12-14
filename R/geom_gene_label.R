@@ -109,6 +109,17 @@ GeomGeneLabel <- ggplot2::ggproto(
   ),
   draw_key = ggplot2::draw_key_text,
 
+  setup_data = function(data, params) {
+
+    # The 'forward' aesthetic, if provided, should be logical or coerced to
+    # logical
+    if (!is.null(data$forward)) {
+      data$forward <- as.logical(data$forward)
+    }
+
+    data
+  },
+
   draw_panel = function(
     data,
     panel_scales,
@@ -123,22 +134,38 @@ GeomGeneLabel <- ggplot2::ggproto(
     subgroup = NA
   ) {
 
-    # Detect flipped coordinates
-    coord_flip <- inherits(coord, "CoordFlip")
-    if (coord_flip) {
-      data$angle <- data$angle + 90
+    # Detect coordinate system and transform coordinates. The ggfittext
+    # makeContent methods expect a different set of aesthetic names.
+    coord_system <- get_coord_system(coord)
+    data <- data_to_grid(data, coord_system, panel_scales, coord)
+    if (coord_system == "cartesian") {
+      if ("along_min" %in% names(data)) { data$xmin <- data$along_min }
+      if ("along_max" %in% names(data)) { data$xmax <- data$along_max }
+      if ("away" %in% names(data)) { data$y <- data$away }
+    } else if (coord_system == "flip") {
+      if ("along_min" %in% names(data)) { data$ymin <- data$along_min }
+      if ("along_max" %in% names(data)) { data$ymax <- data$along_max }
+      if ("away" %in% names(data)) { data$x <- data$away }
+    } else if (coord_system == "polar") {
+      if ("along_min" %in% names(data)) { data$xmin <- data$along_min }
+      if ("along_max" %in% names(data)) { data$xmax <- data$along_max }
+      if ("away" %in% names(data)) { data$r <- data$away }
     }
 
-    # Transform data to panel scales
-    data <- coord$transform(data, panel_scales)
-
     # Check value of 'align'
-    if (! align %in% c("left", "centre", "center", "middle", "right")) {
-      stop("`align` must be one of `left`, `centre`, `center`, `middle` or `right`")
+    if (! align %in% c(
+      "left",
+      "centre",
+      "center",
+      "middle",
+      "right"
+    )) {
+      cli::cli_abort("`align` must be one of `left`, `centre`, `center`, `middle` or `right`")
     }
 
     # Use ggfittext's fittexttree to draw text
-    if (coord_flip) {
+    if (coord_system == "flip") {
+      data$angle <- data$angle + 90
       gt <- grid::gTree(
         data = data,
         padding.x = padding.x,
@@ -151,7 +178,7 @@ GeomGeneLabel <- ggplot2::ggproto(
         width = height,
         fullheight = TRUE
       )
-    } else {
+    } else if (coord_system == "cartesian") {
       gt <- grid::gTree(
         data = data,
         padding.x = padding.x,
@@ -164,6 +191,22 @@ GeomGeneLabel <- ggplot2::ggproto(
         height = height,
         fullheight = TRUE
       )
+    } else if (coord_system == "polar") {
+      gt <- grid::gTree(
+        data = data,
+        padding.x = padding.x,
+        padding.y = padding.y,
+        place = align,
+        min.size = min.size,
+        grow = grow,
+        reflow = reflow,
+        cl = "fittexttreepolar",
+        height = height,
+        fullheight = TRUE,
+        flip = FALSE
+      )
+    } else {
+      cli::cli_abort("Don't know how to draw in this coordinate system")
     }
     gt$name <- grid::grobName(gt, "geom_gene_label")
     gt
